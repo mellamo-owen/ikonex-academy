@@ -1,1 +1,7 @@
-﻿{}
+﻿{
+  "buildCommand": "npx prisma generate && npx next build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "devCommand": "npm run dev"
+}
