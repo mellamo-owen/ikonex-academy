@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ClassStream {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  students  Student[]
+  subjects  StreamSubject[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  name        String
+  admissionNo String   @unique
+  streamId    String
+  stream      ClassStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  scores      Score[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Subject {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String   @unique
+  streams   StreamSubject[]
+  scores    Score[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StreamSubject {
+  id        String   @id @default(cuid())
+  streamId  String
+  subjectId String
+  stream    ClassStream @relation(fields: [streamId], references: [id])
+  subject   Subject     @relation(fields: [subjectId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@unique([streamId, subjectId])
+}
+
+model Score {
+  id        String   @id @default(cuid())
+  studentId String
+  subjectId String
+  examScore Int      @default(0)
+  caScore   Int      @default(0)
+  total     Int      @default(0)
+  grade     String?
+  position  Int?
+  term      String   @default("Term 1")
+  year      Int      @default(2026)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([studentId, subjectId, term, year])
+}
+
+model GradingScale {
+  id        String @id @default(cuid())
+  minScore  Int
+  maxScore  Int
+  grade     String @unique
+  remark    String
+  createdAt DateTime @default(now())
+}
