@@ -7,13 +7,7 @@ export async function GET(request: NextRequest) {
   
   const students = await prisma.student.findMany({
     where: streamId ? { streamId } : {},
-    include: {
-      stream: true,
-      scores: {
-        include: { subject: true }
-      }
-    },
-    orderBy: { admissionNo: 'asc' }
+    include: { stream: true, scores: { include: { subject: true } } }
   });
   return NextResponse.json(students);
 }
@@ -32,9 +26,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(student, { status: 201 });
   } catch (error: any) {
     if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Admission number already exists' }, { status: 400 });
+      return NextResponse.json({ error: 'Admission number exists' }, { status: 400 });
     }
-    return NextResponse.json({ error: 'Failed to create student' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
   }
 }
 
@@ -43,15 +37,11 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const student = await prisma.student.update({
       where: { id: body.id },
-      data: {
-        name: body.name,
-        streamId: body.streamId
-      },
-      include: { stream: true }
+      data: { name: body.name, streamId: body.streamId }
     });
     return NextResponse.json(student);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update student' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
   }
 }
 
@@ -62,6 +52,6 @@ export async function DELETE(request: NextRequest) {
     await prisma.student.delete({ where: { id: id! } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete student' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
   }
 }

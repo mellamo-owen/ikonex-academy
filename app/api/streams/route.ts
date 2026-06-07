@@ -8,8 +8,7 @@ export async function GET() {
         _count: {
           select: { students: true }
         }
-      },
-      orderBy: { name: 'asc' }
+      }
     });
     return NextResponse.json(streams);
   } catch (error) {
@@ -38,7 +37,7 @@ export async function PUT(request: NextRequest) {
     });
     return NextResponse.json(stream);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update stream' }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
   }
 }
 
@@ -49,6 +48,6 @@ export async function DELETE(request: NextRequest) {
     await prisma.classStream.delete({ where: { id: id! } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete stream' }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
   }
 }
